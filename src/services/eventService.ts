@@ -1,16 +1,24 @@
 import { PrismaClient } from '@prisma/client';
+import { redis } from '../utils/redis';
 
 const prisma = new PrismaClient();
 
 export async function getAll({ date, name }: { date?: string; name?: string }) {
+  const cacheKey = !date && !name ? 'events:popular' : undefined;
+  if (cacheKey) {
+    const cached = await redis.get(cacheKey);
+    if (cached) return JSON.parse(cached);
+  }
   const where: any = {};
   if (date) where.eventDate = date;
   if (name) where.name = { contains: name, mode: 'insensitive' };
-  return prisma.event.findMany({
+  const events = await prisma.event.findMany({
     where,
     orderBy: { eventDate: 'asc' },
     include: { creator: { select: { id: true, name: true, email: true } }, reservations: true }
   });
+  if (cacheKey) await redis.set(cacheKey, JSON.stringify(events), { EX: 60 });
+  return events;
 }
 
 export async function getById(id: string) {
