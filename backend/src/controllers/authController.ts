@@ -1,6 +1,10 @@
 import { Request, Response } from 'express';
 import * as authService from '../services/authService';
 
+/**
+ * Controller responsável pelo registro de novos usuários.
+ * Retorna erro se o e-mail já estiver cadastrado.
+ */
 export async function register(req: Request, res: Response) {
   try {
     const user = await authService.register(req.body);
@@ -10,6 +14,10 @@ export async function register(req: Request, res: Response) {
   }
 }
 
+/**
+ * Controller responsável pelo login de usuários.
+ * Retorna JWT se sucesso, erro se credenciais inválidas.
+ */
 export async function login(req: Request, res: Response) {
   try {
     const token = await authService.login(req.body);

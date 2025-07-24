@@ -1,12 +1,18 @@
 import { Request, Response } from 'express';
 import * as eventService from '../services/eventService';
 
+/**
+ * Lista eventos, com filtros opcionais de data e nome.
+ */
 export async function getAllEvents(req: Request, res: Response) {
   const { date, name } = req.query;
   const events = await eventService.getAll({ date: date as string, name: name as string });
   res.json(events);
 }
 
+/**
+ * Busca detalhes de um evento pelo ID.
+ */
 export async function getEventById(req: Request, res: Response) {
   try {
     const event = await eventService.getById(req.params.id);
@@ -16,6 +22,9 @@ export async function getEventById(req: Request, res: Response) {
   }
 }
 
+/**
+ * Cria um novo evento (admin).
+ */
 export async function createEvent(req: Request, res: Response) {
   try {
     const event = await eventService.create({ ...req.body, creatorId: (req as any).userId });
@@ -25,6 +34,9 @@ export async function createEvent(req: Request, res: Response) {
   }
 }
 
+/**
+ * Atualiza um evento existente (admin).
+ */
 export async function updateEvent(req: Request, res: Response) {
   try {
     const event = await eventService.update(req.params.id, req.body);
@@ -34,6 +46,9 @@ export async function updateEvent(req: Request, res: Response) {
   }
 }
 
+/**
+ * Deleta um evento (admin).
+ */
 export async function deleteEvent(req: Request, res: Response) {
   try {
     await eventService.remove(req.params.id);

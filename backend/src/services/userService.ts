@@ -3,16 +3,25 @@ import bcrypt from 'bcryptjs';
 
 const prisma = new PrismaClient();
 
+/**
+ * Lista todos os usuários do sistema (admin).
+ */
 export async function getAll() {
   return prisma.user.findMany({ select: { id: true, email: true, name: true, role: true, createdAt: true } });
 }
 
+/**
+ * Busca um usuário pelo ID. Lança erro se não encontrar.
+ */
 export async function getById(id: string) {
   const user = await prisma.user.findUnique({ where: { id }, select: { id: true, email: true, name: true, role: true, createdAt: true } });
   if (!user) throw new Error('Usuário não encontrado');
   return user;
 }
 
+/**
+ * Atualiza nome e/ou senha do usuário pelo ID. Se senha for informada, faz hash.
+ */
 export async function updateById(id: string, data: { name?: string; password?: string }) {
   const updateData: any = {};
   if (data.name) updateData.name = data.name;
@@ -21,6 +30,9 @@ export async function updateById(id: string, data: { name?: string; password?: s
   return user;
 }
 
+/**
+ * Remove um usuário pelo ID.
+ */
 export async function deleteById(id: string) {
   await prisma.user.delete({ where: { id } });
 } 

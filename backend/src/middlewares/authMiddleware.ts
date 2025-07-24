@@ -1,6 +1,9 @@
 import { NextFunction, Request, Response } from 'express';
 import { verifyToken } from '../utils/jwt';
 
+/**
+ * Middleware que valida o JWT e adiciona userId e role ao request.
+ */
 export function authenticate(req: Request, res: Response, next: NextFunction) {
   const auth = req.headers.authorization;
   if (!auth || !auth.startsWith('Bearer ')) {
@@ -17,6 +20,9 @@ export function authenticate(req: Request, res: Response, next: NextFunction) {
   }
 }
 
+/**
+ * Middleware que restringe acesso a determinadas roles (ex: ADMIN).
+ */
 export function authorize(roles: string[]) {
   return (req: Request, res: Response, next: NextFunction) => {
     const role = (req as any).role;

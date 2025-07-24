@@ -5,6 +5,9 @@ import jwt from 'jsonwebtoken';
 const prisma = new PrismaClient();
 const JWT_SECRET = process.env.JWT_SECRET || 'changeme';
 
+/**
+ * Registra um novo usuário, garantindo e-mail único e senha protegida por hash.
+ */
 export async function register({ email, password, name }: { email: string; password: string; name: string }) {
   const existing = await prisma.user.findUnique({ where: { email } });
   if (existing) throw new Error('Email já cadastrado');
@@ -16,6 +19,9 @@ export async function register({ email, password, name }: { email: string; passw
   return user;
 }
 
+/**
+ * Realiza login, validando senha e retornando JWT se sucesso.
+ */
 export async function login({ email, password }: { email: string; password: string }) {
   const user = await prisma.user.findUnique({ where: { email } });
   if (!user) throw new Error('Usuário ou senha inválidos');
