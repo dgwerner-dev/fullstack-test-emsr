@@ -13,3 +13,50 @@ datasource db {
   url       = env("DATABASE_URL")
   directUrl = env("DIRECT_URL")
 }
+
+model User {
+  id           String        @id @default(uuid())
+  email        String        @unique
+  password     String
+  name         String
+  role         Role          @default(USER)
+  createdAt    DateTime      @default(now())
+  updatedAt    DateTime      @updatedAt
+  events       Event[]       @relation("EventCreator")
+  reservations Reservation[]
+}
+
+enum Role {
+  USER
+  ADMIN
+}
+
+model Event {
+  id           String        @id @default(uuid())
+  name         String
+  description  String?
+  eventDate    DateTime
+  location     String?
+  onlineLink   String?
+  maxCapacity  Int
+  creatorId    String
+  creator      User          @relation("EventCreator", fields: [creatorId], references: [id])
+  reservations Reservation[]
+  createdAt    DateTime      @default(now())
+  updatedAt    DateTime      @updatedAt
+}
+
+model Reservation {
+  id              String            @id @default(uuid())
+  eventId         String
+  userId          String
+  reservationDate DateTime          @default(now())
+  status          ReservationStatus @default(CONFIRMED)
+  event           Event             @relation(fields: [eventId], references: [id])
+  user            User              @relation(fields: [userId], references: [id])
+}
+
+enum ReservationStatus {
+  CONFIRMED
+  CANCELED
+}
