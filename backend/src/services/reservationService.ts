@@ -7,6 +7,7 @@ export async function reserve({ eventId, userId }: { eventId: string; userId: st
     const event = await tx.event.findUnique({ where: { id: eventId } });
     if (!event) throw new Error('Evento não encontrado');
     const reserved = await tx.reservation.count({ where: { eventId, status: 'CONFIRMED' } });
+    console.log('Reservas confirmadas:', reserved, 'Max:', event.maxCapacity);
     if (reserved >= event.maxCapacity) throw new Error('Evento esgotado');
     const already = await tx.reservation.findFirst({ where: { eventId, userId, status: 'CONFIRMED' } });
     if (already) throw new Error('Você já reservou este evento');
