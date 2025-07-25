@@ -7,11 +7,15 @@ const prisma = new PrismaClient();
  * Lista eventos, podendo filtrar por data e nome. Usa cache Redis para eventos populares.
  */
 export async function getAll({ date, name }: { date?: string; name?: string }) {
-  // Usa cache apenas se não houver filtro
+  // Usa cache apenas se não houver filtro e Redis estiver disponível
   const cacheKey = !date && !name ? 'events:popular' : undefined;
-  if (cacheKey) {
-    const cached = await redis.get(cacheKey);
-    if (cached) return JSON.parse(cached);
+  if (cacheKey && redis) {
+    try {
+      const cached = await redis.get(cacheKey);
+      if (cached) return JSON.parse(cached);
+    } catch (error) {
+      console.warn('Erro ao acessar cache Redis:', error);
+    }
   }
   const where: any = {};
   if (date) where.eventDate = date;
@@ -22,7 +26,13 @@ export async function getAll({ date, name }: { date?: string; name?: string }) {
     orderBy: { eventDate: 'asc' },
     include: { creator: { select: { id: true, name: true, email: true } }, reservations: true }
   });
-  if (cacheKey) await redis.set(cacheKey, JSON.stringify(events), { EX: 60 });
+  if (cacheKey && redis) {
+    try {
+      await redis.set(cacheKey, JSON.stringify(events), { EX: 60 });
+    } catch (error) {
+      console.warn('Erro ao salvar cache Redis:', error);
+    }
+  }
   return events;
 }
 
