@@ -10,7 +10,13 @@ export default function MyReservations() {
   useEffect(() => {
     getMyReservations()
       .then(setReservations)
-      .catch(err => setError(err.message))
+      .catch(err => {
+        if (err.message && (err.message.includes('403') || err.message.toLowerCase().includes('forbidden'))) {
+          setError('Acesso negado: apenas usuários comuns podem acessar suas próprias reservas.');
+        } else {
+          setError(err.message);
+        }
+      })
       .finally(() => setLoading(false));
   }, []);
 

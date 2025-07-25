@@ -23,7 +23,11 @@ export async function getMyReservations() {
   const res = await fetch(`${API_URL}/reservations/my-reservations`, {
     headers: { "Authorization": `Bearer ${token}` }
   });
-  if (!res.ok) throw new Error("Erro ao buscar reservas");
+  if (!res.ok) {
+    let msg = "Erro ao buscar reservas";
+    if (res.status === 403) msg = "Acesso negado: apenas usuários comuns podem acessar suas próprias reservas.";
+    throw new Error(msg);
+  }
   return res.json();
 }
 

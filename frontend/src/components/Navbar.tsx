@@ -2,6 +2,7 @@
 
 import { useAuth } from "@/contexts/AuthContext";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { useState } from "react";
 
 /**
@@ -11,10 +12,12 @@ import { useState } from "react";
 export default function Navbar() {
   const { user, logout } = useAuth();
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+  const router = useRouter();
 
   const handleLogout = () => {
     logout();
     setIsMobileMenuOpen(false);
+    router.push("/");
   };
 
   return (
@@ -38,6 +41,12 @@ export default function Navbar() {
           <div className="hidden md:flex items-center space-x-4">
             {user ? (
               <>
+                <Link
+                  href="/profile"
+                  className="text-gray-600 hover:text-gray-900 px-3 py-2 rounded-md text-sm font-medium transition-colors"
+                >
+                  Meu Perfil
+                </Link>
                 <Link
                   href="/my-reservations"
                   className="text-gray-600 hover:text-gray-900 px-3 py-2 rounded-md text-sm font-medium transition-colors"
@@ -104,6 +113,13 @@ export default function Navbar() {
           <div className="md:hidden border-t border-gray-200 py-4">
             {user ? (
               <div className="space-y-3">
+                <Link
+                  href="/profile"
+                  className="block text-gray-600 hover:text-gray-900 px-3 py-2 rounded-md text-base font-medium transition-colors"
+                  onClick={() => setIsMobileMenuOpen(false)}
+                >
+                  Meu Perfil
+                </Link>
                 <Link
                   href="/my-reservations"
                   className="block text-gray-600 hover:text-gray-900 px-3 py-2 rounded-md text-base font-medium transition-colors"
