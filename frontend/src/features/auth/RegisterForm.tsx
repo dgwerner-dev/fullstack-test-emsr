@@ -27,7 +27,20 @@ export default function RegisterForm() {
       await register({ name, email, password });
       router.push("/");
     } catch (err: any) {
-      setError(err.message || "Erro ao fazer registro");
+      let message = "Erro interno do servidor. Tente novamente mais tarde.";
+      // Tenta extrair mensagem amigável
+      if (err?.response?.data?.error) {
+        message = err.response.data.error;
+      } else if (typeof err?.message === "string") {
+        if (err.message.includes("Email já cadastrado")) {
+          message = "Este e-mail já está cadastrado.";
+        } else if (err.message.includes("Environment variable not found: DATABASE_URL")) {
+          message = "Erro de configuração do servidor. Tente novamente mais tarde.";
+        }
+      }
+      setError(message);
+      // Loga o erro completo para debug
+      console.error(err);
     } finally {
       setLoading(false);
     }

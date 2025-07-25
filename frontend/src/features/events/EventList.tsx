@@ -12,13 +12,15 @@ export default function EventList() {
   const [events, setEvents] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
+  const [filterName, setFilterName] = useState("");
+  const [filterDate, setFilterDate] = useState("");
 
   useEffect(() => {
-    getEvents()
+    getEvents({ name: filterName, date: filterDate })
       .then(setEvents)
       .catch(err => setError(err.message))
       .finally(() => setLoading(false));
-  }, []);
+  }, [filterName, filterDate]);
 
   if (loading) {
     return (
@@ -78,6 +80,11 @@ export default function EventList() {
           <p className="text-lg text-gray-600 max-w-2xl mx-auto">
             Descubra eventos incríveis e reserve sua vaga. Não perca a oportunidade de participar!
           </p>
+        </div>
+
+        <div className="flex gap-4 mb-4">
+          <input type="text" placeholder="Filtrar por nome" value={filterName} onChange={e => setFilterName(e.target.value)} className="border px-2 py-1 rounded" />
+          <input type="date" value={filterDate} onChange={e => setFilterDate(e.target.value)} className="border px-2 py-1 rounded" />
         </div>
 
         <div className="grid gap-8 md:grid-cols-2 lg:grid-cols-3">
