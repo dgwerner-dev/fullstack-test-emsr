@@ -4,8 +4,8 @@ import { authenticate, authorize } from '../middlewares/authMiddleware';
 
 const router = Router();
 
-router.get('/', authenticate, getAllEvents);
-router.get('/:id', authenticate, getEventById);
+router.get('/', getAllEvents);
+router.get('/:id', getEventById);
 router.post('/', authenticate, authorize(['ADMIN']), createEvent);
 router.put('/:id', authenticate, authorize(['ADMIN']), updateEvent);
 router.delete('/:id', authenticate, authorize(['ADMIN']), deleteEvent);
