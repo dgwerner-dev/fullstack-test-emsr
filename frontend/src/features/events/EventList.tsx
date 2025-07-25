@@ -22,71 +22,43 @@ export default function EventList() {
       .finally(() => setLoading(false));
   }, [filterName, filterDate]);
 
-  if (loading) {
-    return (
-      <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 py-12 px-4 sm:px-6 lg:px-8">
-        <div className="max-w-7xl mx-auto">
-          <div className="text-center">
-            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto"></div>
-            <p className="mt-4 text-lg text-gray-600">Carregando eventos...</p>
-          </div>
-        </div>
-      </div>
-    );
-  }
-
-  if (error) {
-    return (
-      <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 py-12 px-4 sm:px-6 lg:px-8">
-        <div className="max-w-7xl mx-auto">
-          <div className="text-center">
-            <div className="bg-red-50 border border-red-200 text-red-700 px-6 py-4 rounded-lg max-w-md mx-auto">
-              <p className="text-lg font-medium">Erro ao carregar eventos</p>
-              <p className="text-sm mt-1">{error}</p>
-            </div>
-          </div>
-        </div>
-      </div>
-    );
-  }
-
-  if (!events.length) {
-    return (
-      <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 py-12 px-4 sm:px-6 lg:px-8">
-        <div className="max-w-7xl mx-auto">
-          <div className="text-center">
-            <div className="bg-white rounded-2xl shadow-xl p-8 max-w-md mx-auto">
-              <div className="w-16 h-16 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-4">
-                <svg className="w-8 h-8 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
-                </svg>
-              </div>
-              <h3 className="text-xl font-semibold text-gray-900 mb-2">Nenhum evento encontrado</h3>
-              <p className="text-gray-600">Aguarde novos eventos serem criados.</p>
-            </div>
-          </div>
-        </div>
-      </div>
-    );
-  }
-
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 py-12 px-4 sm:px-6 lg:px-8">
-      <div className="max-w-7xl mx-auto">
-        <div className="text-center mb-12">
-          <h1 className="text-4xl font-bold text-gray-900 mb-4">
-            Eventos Disponíveis
-          </h1>
-          <p className="text-lg text-gray-600 max-w-2xl mx-auto">
-            Descubra eventos incríveis e reserve sua vaga. Não perca a oportunidade de participar!
-          </p>
+    <div>
+      <div className="flex gap-4 mb-4 items-center">
+        <input type="text" placeholder="Filtrar por nome" value={filterName} onChange={e => setFilterName(e.target.value)} className="border px-2 py-1 rounded" />
+        <input type="date" value={filterDate} onChange={e => setFilterDate(e.target.value)} className="border px-2 py-1 rounded" />
+        <button
+          type="button"
+          onClick={() => { setFilterName(""); setFilterDate(""); }}
+          className="px-3 py-1 bg-gray-200 rounded hover:bg-gray-300 text-sm"
+          disabled={!filterName && !filterDate}
+        >
+          Limpar filtros
+        </button>
+      </div>
+      {loading ? (
+        <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 py-12 px-4 sm:px-6 lg:px-8">
+          <div className="max-w-7xl mx-auto">
+            <div className="text-center">
+              <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto"></div>
+              <p className="mt-4 text-lg text-gray-600">Carregando eventos...</p>
+            </div>
+          </div>
         </div>
-
-        <div className="flex gap-4 mb-4">
-          <input type="text" placeholder="Filtrar por nome" value={filterName} onChange={e => setFilterName(e.target.value)} className="border px-2 py-1 rounded" />
-          <input type="date" value={filterDate} onChange={e => setFilterDate(e.target.value)} className="border px-2 py-1 rounded" />
+      ) : error ? (
+        <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 py-12 px-4 sm:px-6 lg:px-8">
+          <div className="max-w-7xl mx-auto">
+            <div className="text-center">
+              <div className="bg-red-50 border border-red-200 text-red-700 px-6 py-4 rounded-lg max-w-md mx-auto">
+                <p className="text-lg font-medium">Erro ao carregar eventos</p>
+                <p className="text-sm mt-1">{error}</p>
+              </div>
+            </div>
+          </div>
         </div>
-
+      ) : events.length === 0 ? (
+        <div className="text-center text-gray-500 mt-8">Nenhum evento encontrado para o filtro selecionado.</div>
+      ) : (
         <div className="grid gap-8 md:grid-cols-2 lg:grid-cols-3">
           {events.map(event => (
             <Link key={event.id} href={`/events/${event.id}`} className="group">
@@ -167,7 +139,7 @@ export default function EventList() {
             </Link>
           ))}
         </div>
-      </div>
+      )}
     </div>
   );
 }

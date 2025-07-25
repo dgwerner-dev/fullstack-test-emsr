@@ -18,7 +18,11 @@ export async function getAll({ date, name }: { date?: string; name?: string }) {
     }
   }
   const where: any = {};
-  if (date) where.eventDate = date;
+  if (date) {
+    const start = new Date(date + "T00:00:00.000Z");
+    const end = new Date(start.getTime() + 24 * 60 * 60 * 1000);
+    where.eventDate = { gte: start, lt: end };
+  }
   if (name) where.name = { contains: name, mode: 'insensitive' };
   // Busca eventos ordenados por data
   const events = await prisma.event.findMany({
