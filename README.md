@@ -1,121 +1,229 @@
-# Coding Challenge: Event Management System with Reservations
+# Sistema de Gerenciamento de Eventos
 
-## Project Objective
+Sistema full-stack para gerenciamento de eventos com sistema de reservas, desenvolvido com Node.js/TypeScript no backend e Next.js/React no frontend.
 
-Develop a full-stack web application for users to view, create, and manage events, including a reservation system for spots. This challenge aims to evaluate your ability to handle structured data, manage inventory (spots), and integrate notifications.
+## 🚀 Tecnologias Utilizadas
 
-## Context
+### Backend
+- **Node.js** com **TypeScript**
+- **Express.js** para API REST
+- **PostgreSQL** (via Supabase) como banco de dados
+- **Prisma** como ORM
+- **Redis** para cache de eventos populares
+- **JWT** para autenticação
+- **Bcryptjs** para hash de senhas
+- **Jest** e **Supertest** para testes
 
-Build a platform where administrators can create events (online or in-person) with a limited number of available spots. Regular users can register, view events, and reserve spots.
+### Frontend
+- **Next.js 15** com App Router
+- **React 18** com TypeScript
+- **Tailwind CSS** para estilização
+- **Context API** para gerenciamento de estado
 
----
+## 📋 Funcionalidades
 
-## Essential Requirements (MVP - Minimum Viable Product)
+### Autenticação
+- ✅ Registro de usuários
+- ✅ Login/logout
+- ✅ Controle de acesso baseado em roles (USER/ADMIN)
 
-### 1. Backend (RESTful API)
+### Eventos
+- ✅ Listagem de eventos
+- ✅ Detalhes do evento
+- ✅ Criação de eventos (admin)
+- ✅ Edição de eventos (admin)
+- ✅ Exclusão de eventos (admin)
+- ✅ Cache Redis para eventos populares
 
-* **Technologies:** Node.js (with Express.js or similar framework), TypeScript.
-* **Authentication & Authorization:**
-    * User registration (email, password).
-    * User login (email, password).
-    * Implement **JWT (JSON Web Tokens)** for authentication.
-    * **Roles/Permissions:**
-        * `user`: Can view events, reserve spots, and see their own reservations.
-        * `admin`: Can create, edit, delete events, and manage any user's reservations.
-* **User Management:** Basic CRUD (self-profile for `user`, full CRUD for `admin`).
-* **Event Management:**
-    * Each event must have:
-        * `id` (auto-generated)
-        * `name` (string, required)
-        * `description` (string, optional)
-        * `eventDate` (Date, required)
-        * `location` (string, optional, for in-person events)
-        * `onlineLink` (string, optional, for online events)
-        * `maxCapacity` (number, required, > 0)
-        * `availableSpots` (number, dynamically calculated, decreases with reservations, increases with cancellations)
-        * `creatorId` (ID of the admin user who created the event)
-    * **Endpoints:**
-        * `GET /events`: List all events (filter by date, name, etc.).
-        * `GET /events/:id`: Get details of a specific event.
-        * `POST /events` (admin only): Create a new event.
-        * `PUT /events/:id` (admin only): Update an existing event.
-        * `DELETE /events/:id` (admin only): Delete an event.
-* **Reservation Management:**
-    * Each reservation must have:
-        * `id` (auto-generated)
-        * `eventId` (ID of the event)
-        * `userId` (ID of the user who made the reservation)
-        * `reservationDate` (Date, auto-generated)
-        * `status` (enum: "confirmed", "canceled" - default "confirmed")
-    * **Endpoints:**
-        * `POST /events/:id/reserve` (user only): Make a reservation for an event. Must decrement `availableSpots` and fail if no spots are available.
-        * `DELETE /reservations/:id` (user only, for their own reservation, or admin): Cancel a reservation. Must increment `availableSpots`.
-        * `GET /my-reservations` (user only): List all reservations for the authenticated user.
-        * `GET /events/:id/reservations` (admin only): List all reservations for a specific event.
-* **Data Persistence:**
-    * **Required:** **PostgreSQL** (or MySQL) with an ORM (e.g., Prisma, TypeORM, Sequelize).
-    * **Required:** **Redis** for caching popular event information or user sessions.
-* **Validation and Error Handling:** Validate input data and robust error handling.
-* **Project Structure:** Logical and scalable organization.
+### Reservas
+- ✅ Reserva de vaga em eventos
+- ✅ Cancelamento de reservas
+- ✅ Listagem de reservas do usuário
+- ✅ Listagem de reservas do evento (admin)
+- ✅ Controle de capacidade máxima
 
-### 2. Frontend (Web Application)
+### Usuários
+- ✅ Gerenciamento de perfil
+- ✅ CRUD completo de usuários (admin)
 
-* **Technologies:** React/Next.js, TypeScript.
-* **User Interface (UI):**
-    * Login and Registration pages.
-    * Event listing page with filters (date, name).
-    * Event detail page, showing available spots and reservation option.
-    * "My Reservations" page for logged-in users.
-    * **Admin Panel:** If the logged-in user is an `admin`, they must have access to a panel to:
-        * Create/edit/delete events.
-        * View all reservations.
-    * Responsive design.
-* **API Consumption:** Interact with the Backend API.
-* **State Management:** Utilize Context API, Redux, Zustand, or a similar library.
-* **Navigation:** Use Next.js routing system.
-* **User Feedback:** Clear success, error, or loading messages.
+## 🛠️ Configuração e Execução
 
----
+### Pré-requisitos
+- Node.js 18+
+- npm ou yarn
+- Conta no Supabase (para PostgreSQL)
+- Redis (opcional, para cache)
 
-## Additional Requirements (Differentiators)
+### 1. Clone o repositório
+```bash
+git clone https://github.com/dgwerner-dev/fullstack-test-emsr.git
+cd fullstack-test-emsr
+```
 
-These points are not mandatory for MVP completion but add significant value and demonstrate a higher level of expertise.
+### 2. Configuração do Backend
 
-1.  **Testing:** Implement unit and/or integration tests for backend and/or frontend.
-2.  **Deployment:** Deploy the full-stack application on a cloud platform (e.g., Azure, Vercel/Netlify, Heroku). Provide links.
-3.  **Real-time Notifications:**
-    * Use WebSockets (e.g., Socket.io) to notify users in real-time about:
-        * Spots being sold out for an event they were viewing.
-        * Confirmation or cancellation of their reservation.
-4.  **Calendar Integration:** Allow the user to add a reserved event to their personal calendar (Google Calendar, Outlook) via an iCal link.
-5.  **Reports (Admin):** For administrators, create a simple report (in the frontend or via a new API route) showing the number of spots filled per event.
-6.  **Shopify Experience (ONLY IF APPLICABLE):**
-    * *Alternative to Event Management:* Create a Shopify App that allows the merchant to register "Online Consulting Sessions" with limited spots. Store customers can reserve these sessions.
-        * Utilize **Shopify Polaris** for the session administration interface.
-        * Sessions should be displayed on a custom page in the store via **Liquid** or script injection.
-        * Manage the capacity/spots of the sessions.
+```bash
+cd backend
+npm install
+```
 
----
+Crie um arquivo `.env` na pasta `backend`:
+```env
+DATABASE_URL="postgresql://postgres:[SEU_PASSWORD]:5432/postgres"
+REDIS_URL="redis://localhost:6379"
+JWT_SECRET="sua_chave_secreta_jwt"
+PORT=3001
+```
 
-## Project Submission
+Execute as migrações do banco:
+```bash
+npx prisma migrate dev
+npx prisma generate
+```
 
-1.  **Git Repository:**
-    * Create a public Git repository (GitHub, GitLab, Bitbucket).
-    * Include this detailed `README.md` file.
-    * Ensure the commit history is clean and reflects development progress.
-2.  **Deadline:** The project must be submitted within **7 calendar days** from the receipt of this challenge.
+### 3. Configuração do Frontend
 
----
+```bash
+cd frontend
+npm install
+```
 
-## Evaluation Criteria
+Crie um arquivo `.env.local` na pasta `frontend`:
+```env
+NEXT_PUBLIC_API_URL=http://localhost:3001
+```
 
-* **Functionality:** How well the essential requirements are met.
-* **Code Quality:** Clarity, readability, modularity, code conventions, TypeScript usage.
-* **Architecture and Design:** Project organization, separation of concerns, scalability.
-* **Best Practices:** Error handling, data validation, security (JWT), state management.
-* **Technology Usage:** Effective application of Node.js, React/Next.js, PostgreSQL/MySQL, Redis.
-* **Problem Solving:** The overall approach to solving the presented challenges.
-* **Documentation:** Clarity and completeness of the `README.md` file.
-* **Differentiators:** Added value from implemented additional requirements.
+### 4. Executando o Projeto
 
-Good luck! We look forward to seeing your solution.
+**Backend:**
+```bash
+cd backend
+npm run dev
+```
+
+**Frontend:**
+```bash
+cd frontend
+npm run dev
+```
+
+O backend estará disponível em `http://localhost:3001` e o frontend em `http://localhost:3000`.
+
+## 🧪 Testes
+
+### Executar testes do backend:
+```bash
+cd backend
+npm test
+```
+
+### Executar testes com coverage:
+```bash
+cd backend
+npm run test:coverage
+```
+
+## 📚 API Endpoints
+
+### Autenticação
+- `POST /auth/register` - Registro de usuário
+- `POST /auth/login` - Login de usuário
+
+### Usuários
+- `GET /users/me` - Obter perfil do usuário logado
+- `PUT /users/me` - Atualizar perfil do usuário logado
+- `DELETE /users/me` - Deletar perfil do usuário logado
+- `GET /users` - Listar todos os usuários (admin)
+- `GET /users/:id` - Obter usuário por ID (admin)
+- `PUT /users/:id` - Atualizar usuário por ID (admin)
+- `DELETE /users/:id` - Deletar usuário por ID (admin)
+
+### Eventos
+- `GET /events` - Listar todos os eventos
+- `GET /events/:id` - Obter evento por ID
+- `POST /events` - Criar evento (admin)
+- `PUT /events/:id` - Atualizar evento (admin)
+- `DELETE /events/:id` - Deletar evento (admin)
+
+### Reservas
+- `POST /reservations/events/:id/reserve` - Reservar vaga em evento
+- `DELETE /reservations/:id` - Cancelar reserva
+- `GET /reservations/my-reservations` - Listar reservas do usuário
+- `GET /reservations/events/:id/reservations` - Listar reservas do evento (admin)
+
+## 🏗️ Estrutura do Projeto
+
+```
+fullstack-test-emsr/
+├── backend/
+│   ├── src/
+│   │   ├── controllers/     # Controladores HTTP
+│   │   ├── services/        # Lógica de negócio
+│   │   ├── routes/          # Definição de rotas
+│   │   ├── middlewares/     # Middlewares Express
+│   │   ├── utils/           # Utilitários
+│   │   └── __tests__/       # Testes automatizados
+│   ├── prisma/
+│   │   └── schema.prisma    # Schema do banco de dados
+│   └── package.json
+├── frontend/
+│   ├── src/
+│   │   ├── app/             # Páginas Next.js (App Router)
+│   │   ├── components/      # Componentes reutilizáveis
+│   │   ├── features/        # Funcionalidades organizadas
+│   │   ├── services/        # Serviços de API
+│   │   └── contexts/        # Contextos React
+│   └── package.json
+└── README.md
+```
+
+## 🔐 Autenticação e Autorização
+
+O sistema utiliza JWT (JSON Web Tokens) para autenticação. Os tokens são enviados no header `Authorization: Bearer <token>`.
+
+### Roles de Usuário:
+- **USER**: Pode fazer reservas, gerenciar próprio perfil
+- **ADMIN**: Acesso completo ao sistema, incluindo CRUD de usuários e eventos
+
+## 🎯 Funcionalidades Implementadas
+
+### ✅ Backend Completo
+- API REST com Express.js
+- Autenticação JWT
+- Autorização baseada em roles
+- CRUD completo para Users, Events e Reservations
+- Cache Redis para eventos populares
+- Testes automatizados com Jest
+- Validação de dados e tratamento de erros
+
+### ✅ Frontend Completo
+- Interface moderna com Next.js 15
+- Autenticação integrada
+- Navegação entre páginas
+- Listagem e detalhes de eventos
+- Sistema de reservas
+- Design responsivo com Tailwind CSS
+
+### ✅ Testes
+- Testes de autenticação
+- Testes de CRUD de usuários
+- Testes de eventos
+- Testes de reservas com controle de capacidade
+- Mocks para Redis e dependências externas
+
+## 🚀 Deploy
+
+### Backend (Supabase)
+O backend pode ser deployado em qualquer plataforma que suporte Node.js (Vercel, Railway, Heroku, etc.).
+
+### Frontend (Vercel)
+O frontend pode ser facilmente deployado no Vercel:
+
+```bash
+cd frontend
+vercel --prod
+```
+
+## 📝 Licença
+
+Este projeto foi desenvolvido como teste técnico para demonstração de habilidades em desenvolvimento full-stack.
