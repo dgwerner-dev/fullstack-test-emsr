@@ -2,8 +2,14 @@
 
 import { login as apiLogin, register as apiRegister } from "@/services/auth";
 import { createContext, useContext, useEffect, useState } from "react";
-// eslint-disable-next-line @typescript-eslint/no-var-requires
-const jwt_decode = require("jwt-decode");
+
+function decodeJwt(token: string) {
+  try {
+    return JSON.parse(atob(token.split('.')[1]));
+  } catch {
+    return null;
+  }
+}
 
 interface AuthContextType {
   user: any;
@@ -23,12 +29,15 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
   useEffect(() => {
     const t = localStorage.getItem("token");
+    console.log("[AuthContext] useEffect token:", t);
     if (t) {
       setToken(t);
       try {
-        const decoded: any = (jwt_decode as any).default ? (jwt_decode as any).default(t) : (jwt_decode as any)(t);
+        const decoded: any = decodeJwt(t);
+        console.log("[AuthContext] Decoded token:", decoded);
         setUser({ id: decoded.userId, role: decoded.role, email: decoded.email, name: decoded.name });
-      } catch {
+      } catch (err) {
+        console.error("[AuthContext] Error decoding token:", err);
         setUser(null);
       }
     }
@@ -40,9 +49,11 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     setToken(res.token);
     localStorage.setItem("token", res.token);
     try {
-      const decoded: any = (jwt_decode as any).default ? (jwt_decode as any).default(res.token) : (jwt_decode as any)(res.token);
+      const decoded: any = decodeJwt(res.token);
+      console.log("[AuthContext] Decoded token after login:", decoded);
       setUser({ id: decoded.userId, role: decoded.role, email: decoded.email, name: decoded.name });
-    } catch {
+    } catch (err) {
+      console.error("[AuthContext] Error decoding token after login:", err);
       setUser(null);
     }
   }
@@ -52,9 +63,11 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     setToken(res.token);
     localStorage.setItem("token", res.token);
     try {
-      const decoded: any = (jwt_decode as any).default ? (jwt_decode as any).default(res.token) : (jwt_decode as any)(res.token);
+      const decoded: any = decodeJwt(res.token);
+      console.log("[AuthContext] Decoded token after register:", decoded);
       setUser({ id: decoded.userId, role: decoded.role, email: decoded.email, name: decoded.name });
-    } catch {
+    } catch (err) {
+      console.error("[AuthContext] Error decoding token after register:", err);
       setUser(null);
     }
   }

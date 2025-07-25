@@ -27,6 +27,10 @@ export async function login({ email, password }: { email: string; password: stri
   if (!user) throw new Error('Usuário ou senha inválidos');
   const valid = await bcrypt.compare(password, user.password);
   if (!valid) throw new Error('Usuário ou senha inválidos');
-  const token = jwt.sign({ userId: user.id, role: user.role }, JWT_SECRET, { expiresIn: '1d' });
+  const token = jwt.sign(
+    { userId: user.id, role: user.role, email: user.email, name: user.name },
+    JWT_SECRET,
+    { expiresIn: '1d' }
+  );
   return token;
 } 
