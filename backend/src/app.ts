@@ -14,7 +14,12 @@ const io = new SocketIOServer(server, { cors: { origin: "*" } });
 app.set("io", io);
 setIO(io);
 
-app.use(cors());
+app.use(cors({
+  origin: '*',
+  credentials: false,
+  methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+  allowedHeaders: ['Content-Type', 'Authorization']
+}));
 app.use(express.json());
 app.use('/auth', authRoutes);
 app.use('/users', userRoutes);
