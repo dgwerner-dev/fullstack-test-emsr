@@ -3,6 +3,8 @@ const API_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:3001";
 // Busca todos os eventos
 export async function getEvents(params?: { name?: string; date?: string }) {
   let url = `${API_URL}/events`;
+  console.log('API_URL:', API_URL);
+  console.log('Full URL:', url);
   if (params) {
     const query = new URLSearchParams();
     if (params.name) query.append("name", params.name);
