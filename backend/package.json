@@ -9,7 +9,7 @@
     "start": "node dist/src/app.js",
     "test": "jest --runInBand --detectOpenHandles",
     "db:seed": "node dist/prisma/seed.js",
-    "db:seed:check": "node -e \"const { PrismaClient } = require('@prisma/client'); const prisma = new PrismaClient(); prisma.event.count().then(count => { console.log('Events count:', count); if (count === 0) { console.log('Running seed...'); require('./dist/prisma/seed.js'); } else { console.log('Data already exists, skipping seed'); } prisma.$disconnect(); });\""
+    "db:seed:check": "node scripts/check-seed.js"
   },
   "keywords": [],
   "author": "",
