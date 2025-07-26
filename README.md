@@ -185,6 +185,22 @@ O sistema utiliza JWT (JSON Web Tokens) para autenticação. Os tokens são envi
 - **USER**: Pode fazer reservas, gerenciar próprio perfil
 - **ADMIN**: Acesso completo ao sistema, incluindo CRUD de usuários e eventos
 
+### 👥 Usuários de Teste
+
+Para facilitar os testes, o sistema já possui usuários pré-configurados:
+
+#### Admin
+- **Email**: `admin@admin.com`
+- **Senha**: `admin1234`
+- **Role**: ADMIN
+- **Permissões**: Acesso completo ao sistema
+
+#### Usuário
+- **Email**: `user@user.com`
+- **Senha**: `user1234`
+- **Role**: USER
+- **Permissões**: Reservas e gerenciamento de perfil
+
 ## 🎯 Funcionalidades Implementadas
 
 ### ✅ Backend Completo
