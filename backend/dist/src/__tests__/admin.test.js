@@ -15,6 +15,10 @@ Object.defineProperty(exports, "__esModule", { value: true });
 const client_1 = require("@prisma/client");
 const supertest_1 = __importDefault(require("supertest"));
 const app_1 = __importDefault(require("../app"));
+const Role = {
+    USER: 'USER',
+    ADMIN: 'ADMIN'
+};
 jest.setTimeout(20000);
 jest.mock('../utils/redis', () => ({
     redis: {
@@ -27,14 +31,14 @@ jest.mock('../utils/redis', () => ({
 }));
 const prisma = new client_1.PrismaClient();
 describe('Admin User API', () => {
-    const admin = { email: 'admin@example.com', password: 'Admin1234', name: 'Admin', role: client_1.Role.ADMIN };
+    const admin = { email: 'admin@example.com', password: 'Admin1234', name: 'Admin', role: Role.ADMIN };
     const user = { email: 'user2@example.com', password: 'User1234', name: 'User Two' };
     let adminToken;
     let userId;
     beforeAll(() => __awaiter(void 0, void 0, void 0, function* () {
         yield prisma.user.deleteMany({ where: { email: { in: [admin.email, user.email] } } });
         yield (0, supertest_1.default)(app_1.default).post('/auth/register').send(admin);
-        yield prisma.user.update({ where: { email: admin.email }, data: { role: client_1.Role.ADMIN } });
+        yield prisma.user.update({ where: { email: admin.email }, data: { role: Role.ADMIN } });
         const login = yield (0, supertest_1.default)(app_1.default).post('/auth/login').send({ email: admin.email, password: admin.password });
         adminToken = login.body.token;
     }));

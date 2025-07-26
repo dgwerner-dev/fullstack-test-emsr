@@ -15,6 +15,10 @@ Object.defineProperty(exports, "__esModule", { value: true });
 const client_1 = require("@prisma/client");
 const supertest_1 = __importDefault(require("supertest"));
 const app_1 = __importDefault(require("../app"));
+const Role = {
+    USER: 'USER',
+    ADMIN: 'ADMIN'
+};
 jest.setTimeout(20000);
 jest.mock('../utils/redis', () => ({
     redis: {
@@ -28,7 +32,7 @@ jest.mock('../utils/redis', () => ({
 }));
 const prisma = new client_1.PrismaClient();
 describe('Reservation API', () => {
-    const admin = { email: 'resadmin@example.com', password: 'Admin1234', name: 'Res Admin', role: client_1.Role.ADMIN };
+    const admin = { email: 'resadmin@example.com', password: 'Admin1234', name: 'Res Admin', role: Role.ADMIN };
     const user = { email: 'resuser@example.com', password: 'User1234', name: 'Res User' };
     let adminToken;
     let userToken;
@@ -41,7 +45,7 @@ describe('Reservation API', () => {
         // Criar admin primeiro
         const adminCreated = yield (0, supertest_1.default)(app_1.default).post('/auth/register').send(admin);
         // Atualizar role para ADMIN
-        yield prisma.user.update({ where: { email: admin.email }, data: { role: client_1.Role.ADMIN } });
+        yield prisma.user.update({ where: { email: admin.email }, data: { role: Role.ADMIN } });
         // Criar usuário
         const userRes = yield (0, supertest_1.default)(app_1.default).post('/auth/register').send(user);
         // Fazer login
