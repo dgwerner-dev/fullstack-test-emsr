@@ -213,8 +213,8 @@ O sistema utiliza JWT (JSON Web Tokens) para autenticação. Os tokens são envi
 
 ## 🚀 Deploy
 
-### Backend (Supabase)
-O backend pode ser deployado em qualquer plataforma que suporte Node.js (Vercel, Railway, Heroku, etc.).
+### Backend
+O backend pode ser deployado em qualquer plataforma que suporte Node.js (Vercel, Heroku, etc.).
 
 ### Frontend (Vercel)
 O frontend pode ser facilmente deployado no Vercel:
