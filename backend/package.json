@@ -1,12 +1,12 @@
 {
   "name": "backend",
   "version": "1.0.0",
-  "main": "dist/app.js",
+  "main": "dist/src/app.js",
   "scripts": {
     "build": "tsc",
     "postinstall": "npx prisma generate",
     "dev": "ts-node-dev --respawn --transpile-only src/app.ts",
-    "start": "node dist/app.js",
+    "start": "node dist/src/app.js",
     "test": "jest --runInBand --detectOpenHandles"
   },
   "keywords": [],
