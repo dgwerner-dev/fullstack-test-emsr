@@ -18,7 +18,11 @@ export async function reserveSpot(req: Request, res: Response) {
  */
 export async function cancelReservation(req: Request, res: Response) {
   try {
-    await reservationService.cancel({ reservationId: req.params.id, userId: (req as any).userId, role: (req as any).role });
+    await reservationService.cancel({ 
+      reservationId: req.params.id, 
+      userId: (req as any).userId, 
+      isAdmin: (req as any).role === 'ADMIN' 
+    });
     res.status(204).send();
   } catch (error: any) {
     res.status(400).json({ error: error.message });

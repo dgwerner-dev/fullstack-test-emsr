@@ -8,6 +8,7 @@ jest.mock('../utils/redis', () => ({
   redis: {
     get: jest.fn(),
     set: jest.fn(),
+    del: jest.fn(),
     on: jest.fn(),
     connect: jest.fn(),
     isOpen: false,
@@ -28,17 +29,23 @@ describe('Reservation API', () => {
     await prisma.reservation.deleteMany({});
     await prisma.event.deleteMany({});
     await prisma.user.deleteMany({ where: { email: { in: [admin.email, user.email] } } });
+    
+    // Criar admin primeiro
     const adminCreated = await request(app).post('/auth/register').send(admin);
+    
+    // Atualizar role para ADMIN
     await prisma.user.update({ where: { email: admin.email }, data: { role: Role.ADMIN } });
-    console.log('Admin criado:', adminCreated.body);
+    
+    // Criar usuário
     const userRes = await request(app).post('/auth/register').send(user);
-    console.log('User register response:', userRes.status, userRes.body);
+    
+    // Fazer login
     const loginAdmin = await request(app).post('/auth/login').send({ email: admin.email, password: admin.password });
     adminToken = loginAdmin.body.token;
-    console.log('Admin login:', loginAdmin.status, loginAdmin.body);
+    
     const loginUser = await request(app).post('/auth/login').send({ email: user.email, password: user.password });
     userToken = loginUser.body.token;
-    console.log('User login:', loginUser.status, loginUser.body);
+    
     // Criar evento
     const event = {
       name: 'Evento Reserva',
@@ -47,12 +54,20 @@ describe('Reservation API', () => {
     };
     const res = await request(app).post('/events').set('Authorization', `Bearer ${adminToken}`).send(event);
     eventId = res.body.id;
-    console.log('Evento criado:', res.status, res.body);
+  });
+
+  afterAll(async () => {
+    await prisma.reservation.deleteMany({});
+    await prisma.event.deleteMany({});
+    await prisma.user.deleteMany({ where: { email: { in: [admin.email, user.email] } } });
+    await prisma.$disconnect();
   });
 
   it('usuário pode reservar vaga em evento', async () => {
+    // Verificar se o evento existe
+    const eventCheck = await request(app).get(`/events/${eventId}`);
+    
     const res = await request(app).post(`/reservations/events/${eventId}/reserve`).set('Authorization', `Bearer ${userToken}`);
-    console.log('Reserva response:', res.status, res.body);
     expect(res.status).toBe(201);
     expect(res.body).toHaveProperty('id');
     reservationId = res.body.id;
@@ -66,14 +81,23 @@ describe('Reservation API', () => {
 
   it('admin pode listar reservas de um evento', async () => {
     const res = await request(app).get(`/reservations/events/${eventId}/reservations`).set('Authorization', `Bearer ${adminToken}`);
-    console.log('Listar reservas (admin):', res.status, res.body);
     expect(res.status).toBe(200);
     expect(Array.isArray(res.body)).toBe(true);
   });
 
   it('usuário pode cancelar sua reserva', async () => {
-    const res = await request(app).delete(`/reservations/${reservationId}`).set('Authorization', `Bearer ${userToken}`);
-    console.log('Cancelar reserva:', res.status, res.body);
+    // Criar um usuário diferente para este teste
+    const user2 = { email: 'resuser2@example.com', password: 'User1234', name: 'Res User 2' };
+    await request(app).post('/auth/register').send(user2);
+    const loginUser2 = await request(app).post('/auth/login').send({ email: user2.email, password: user2.password });
+    const user2Token = loginUser2.body.token;
+    
+    // Criar uma nova reserva específica para este teste
+    const resCreate = await request(app).post(`/reservations/events/${eventId}/reserve`).set('Authorization', `Bearer ${user2Token}`);
+    expect(resCreate.status).toBe(201);
+    const newReservationId = resCreate.body.id;
+    
+    const res = await request(app).delete(`/reservations/${newReservationId}`).set('Authorization', `Bearer ${user2Token}`);
     expect(res.status).toBe(204);
   });
 
@@ -86,18 +110,22 @@ describe('Reservation API', () => {
     };
     const eventRes = await request(app).post('/events').set('Authorization', `Bearer ${adminToken}`).send(event);
     const lotadoId = eventRes.body.id;
+    
     // Reservar com dois usuários
     const user2 = { email: 'resuser2@example.com', password: 'User1234', name: 'Res User 2' };
     await request(app).post('/auth/register').send(user2);
     const loginUser2 = await request(app).post('/auth/login').send({ email: user2.email, password: user2.password });
     const user2Token = loginUser2.body.token;
+    
     await request(app).post(`/reservations/events/${lotadoId}/reserve`).set('Authorization', `Bearer ${userToken}`);
     await request(app).post(`/reservations/events/${lotadoId}/reserve`).set('Authorization', `Bearer ${user2Token}`);
+    
     // Tentar reservar com um terceiro usuário
     const user3 = { email: 'resuser3@example.com', password: 'User1234', name: 'Res User 3' };
     await request(app).post('/auth/register').send(user3);
     const loginUser3 = await request(app).post('/auth/login').send({ email: user3.email, password: user3.password });
     const user3Token = loginUser3.body.token;
+    
     const res = await request(app).post(`/reservations/events/${lotadoId}/reserve`).set('Authorization', `Bearer ${user3Token}`);
     expect(res.status).toBe(400);
     expect(res.body).toHaveProperty('error');

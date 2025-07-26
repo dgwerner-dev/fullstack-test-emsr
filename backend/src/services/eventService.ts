@@ -3,18 +3,55 @@ import { redis } from '../utils/redis';
 
 const prisma = new PrismaClient();
 
-/**
- * Lista eventos, podendo filtrar por data e nome. Usa cache Redis para eventos populares.
- */
+// Invalida cache de eventos
+export async function invalidateEventsCache() {
+  if (redis) {
+    try {
+      await redis.del(['events:popular']);
+    } catch (error) {
+      console.warn('Erro ao invalidar cache:', error);
+    }
+  }
+}
+
+// Busca eventos do cache
+async function getCachedEvents() {
+  if (!redis) return null;
+  
+  try {
+    const cached = await redis.get('events:popular');
+    if (cached) {
+      return JSON.parse(cached);
+    }
+  } catch (error) {
+    console.warn('Erro ao acessar cache Redis:', error);
+  }
+  return null;
+}
+
+// Salva eventos no cache
+async function cacheEvents(events: any[]) {
+  if (!redis) return;
+  
+  try {
+    await redis.set('events:popular', JSON.stringify(events), 'EX', 60);
+  } catch (error) {
+    console.warn('Erro ao salvar cache Redis:', error);
+  }
+}
+
+// Lista eventos com filtros opcionais
 export async function getAll({ date, name }: { date?: string; name?: string }) {
   // Usa cache apenas se não houver filtro e Redis estiver disponível
   const cacheKey = !date && !name ? 'events:popular' : undefined;
   if (cacheKey && redis) {
     try {
       const cached = await redis.get(cacheKey);
-      if (cached) return JSON.parse(cached);
+      if (cached) {
+        return JSON.parse(cached);
+      }
     } catch (error) {
-      console.warn('Erro ao acessar cache Redis:', error);
+      console.warn('Erro ao acessar cache:', error);
     }
   }
   const where: any = {};
@@ -28,25 +65,29 @@ export async function getAll({ date, name }: { date?: string; name?: string }) {
   const events = await prisma.event.findMany({
     where,
     orderBy: { eventDate: 'asc' },
-    include: { creator: { select: { id: true, name: true, email: true } }, reservations: true }
+    include: { 
+      creator: { select: { id: true, name: true, email: true } }, 
+      reservations: { where: { status: 'CONFIRMED' } }
+    }
   });
   if (cacheKey && redis) {
     try {
       await redis.set(cacheKey, JSON.stringify(events), { EX: 60 });
     } catch (error) {
-      console.warn('Erro ao salvar cache Redis:', error);
+      console.warn('Erro ao salvar cache:', error);
     }
   }
   return events;
 }
 
-/**
- * Busca detalhes de um evento pelo ID, incluindo criador e reservas.
- */
+// Busca evento por ID
 export async function getById(id: string) {
   const event = await prisma.event.findUnique({
     where: { id },
-    include: { creator: { select: { id: true, name: true, email: true } }, reservations: true }
+    include: { 
+      creator: { select: { id: true, name: true, email: true } }, 
+      reservations: { where: { status: 'CONFIRMED' } }
+    }
   });
   if (!event) throw new Error('Evento não encontrado');
   return event;

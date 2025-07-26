@@ -2,17 +2,15 @@
 
 import { useAuth } from "@/contexts/AuthContext";
 import { reserveEvent } from "@/services/reservations";
+import { useRouter } from "next/navigation";
 import { useState } from "react";
 
-/**
- * Botão para reservar vaga em um evento.
- * Design moderno com feedback visual aprimorado.
- */
 export default function ReserveButton({ eventId, availableSpots }: { eventId: string; availableSpots: number }) {
   const [loading, setLoading] = useState(false);
   const [message, setMessage] = useState("");
   const [messageType, setMessageType] = useState<"success" | "error" | "">("");
   const { user } = useAuth();
+  const router = useRouter();
 
   const handleReserve = async () => {
     if (!user) {
@@ -34,9 +32,14 @@ export default function ReserveButton({ eventId, availableSpots }: { eventId: st
     try {
       const token = localStorage.getItem("token");
       if (!token) throw new Error("Token não encontrado");
+      
       await reserveEvent(eventId, token);
-      setMessage("Reserva realizada com sucesso! 🎉");
+      setMessage("Reserva realizada com sucesso! 🎉 Redirecionando...");
       setMessageType("success");
+      
+      setTimeout(() => {
+        router.push("/");
+      }, 2000);
     } catch (err: any) {
       setMessage(err.message || "Erro ao fazer reserva");
       setMessageType("error");

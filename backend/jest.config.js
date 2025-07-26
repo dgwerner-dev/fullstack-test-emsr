@@ -8,4 +8,7 @@ module.exports = {
   transform: {
     ...tsJestTransformCfg,
   },
+  testEnvironmentOptions: {
+    NODE_ENV: "test"
+  }
 };

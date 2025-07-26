@@ -1,9 +1,7 @@
 import { Request, Response } from 'express';
 import * as userService from '../services/userService';
 
-/**
- * Retorna o perfil do usuário autenticado.
- */
+// Retorna perfil do usuário
 export async function getProfile(req: Request, res: Response) {
   try {
     const user = await userService.getById((req as any).userId);
@@ -13,9 +11,7 @@ export async function getProfile(req: Request, res: Response) {
   }
 }
 
-/**
- * Atualiza o perfil do usuário autenticado.
- */
+// Atualiza perfil do usuário
 export async function updateProfile(req: Request, res: Response) {
   try {
     const user = await userService.updateById((req as any).userId, req.body);
@@ -25,9 +21,7 @@ export async function updateProfile(req: Request, res: Response) {
   }
 }
 
-/**
- * Deleta o perfil do usuário autenticado.
- */
+// Deleta perfil do usuário
 export async function deleteProfile(req: Request, res: Response) {
   try {
     await userService.deleteById((req as any).userId);
@@ -37,18 +31,13 @@ export async function deleteProfile(req: Request, res: Response) {
   }
 }
 
-// Funções para admin
-/**
- * Lista todos os usuários (admin).
- */
+// Admin: lista todos os usuários
 export async function getAllUsers(req: Request, res: Response) {
   const users = await userService.getAll();
   res.json(users);
 }
 
-/**
- * Busca usuário por ID (admin).
- */
+// Admin: busca usuário por ID
 export async function getUserById(req: Request, res: Response) {
   try {
     const user = await userService.getById(req.params.id);
@@ -58,9 +47,7 @@ export async function getUserById(req: Request, res: Response) {
   }
 }
 
-/**
- * Atualiza usuário por ID (admin).
- */
+// Admin: atualiza usuário
 export async function updateUserById(req: Request, res: Response) {
   try {
     const user = await userService.updateById(req.params.id, req.body);
@@ -70,9 +57,7 @@ export async function updateUserById(req: Request, res: Response) {
   }
 }
 
-/**
- * Deleta usuário por ID (admin).
- */
+// Admin: deleta usuário
 export async function deleteUserById(req: Request, res: Response) {
   try {
     await userService.deleteById(req.params.id);

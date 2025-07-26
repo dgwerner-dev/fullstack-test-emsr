@@ -1,8 +1,6 @@
 const API_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:3001";
 
-/**
- * Busca todos os eventos na API do backend.
- */
+// Busca todos os eventos
 export async function getEvents(params?: { name?: string; date?: string }) {
   let url = `${API_URL}/events`;
   if (params) {
@@ -38,9 +36,7 @@ export async function updateEvent(id: string, data: any) {
   return res.json();
 }
 
-/**
- * Busca detalhes de um evento pelo ID.
- */
+// Busca evento por ID
 export async function getEventById(id: string) {
   const token = localStorage.getItem("token");
   const res = await fetch(`${API_URL}/events/${id}`, {

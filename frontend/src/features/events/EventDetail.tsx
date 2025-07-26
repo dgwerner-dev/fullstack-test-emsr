@@ -81,7 +81,9 @@ export default function EventDetail({ eventId }: { eventId: string }) {
     );
   }
 
-  const availableSpots = event.maxCapacity - (event.reservations?.length ?? 0);
+  // Calcular vagas disponíveis considerando apenas reservas confirmadas
+  const confirmedReservations = event.reservations?.filter((r: any) => r.status === 'CONFIRMED') || [];
+  const availableSpots = event.maxCapacity - confirmedReservations.length;
   const isFull = availableSpots <= 0;
 
   return (
@@ -217,7 +219,7 @@ export default function EventDetail({ eventId }: { eventId: string }) {
                     </div>
                     <div className="flex justify-between items-center">
                       <span className="text-gray-600">Reservas confirmadas:</span>
-                      <span className="font-semibold text-gray-900">{event.reservations?.length ?? 0}</span>
+                      <span className="font-semibold text-gray-900">{confirmedReservations.length}</span>
                     </div>
                     <div className="flex justify-between items-center">
                       <span className="text-gray-600">Vagas disponíveis:</span>
@@ -230,7 +232,7 @@ export default function EventDetail({ eventId }: { eventId: string }) {
                     <div className="mt-4">
                       <div className="flex justify-between text-sm text-gray-600 mb-2">
                         <span>Ocupação</span>
-                        <span>{Math.round(((event.reservations?.length ?? 0) / event.maxCapacity) * 100)}%</span>
+                        <span>{Math.round((confirmedReservations.length / event.maxCapacity) * 100)}%</span>
                       </div>
                       <div className="w-full bg-gray-200 rounded-full h-2">
                         <div 
@@ -238,7 +240,7 @@ export default function EventDetail({ eventId }: { eventId: string }) {
                             isFull ? 'bg-red-500' : 'bg-green-500'
                           }`}
                           style={{ 
-                            width: `${Math.min(((event.reservations?.length ?? 0) / event.maxCapacity) * 100, 100)}%` 
+                            width: `${Math.min((confirmedReservations.length / event.maxCapacity) * 100, 100)}%` 
                           }}
                         ></div>
                       </div>

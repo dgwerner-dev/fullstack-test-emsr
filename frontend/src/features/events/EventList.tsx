@@ -4,10 +4,7 @@ import { getEvents } from "@/services/events";
 import Link from "next/link";
 import { useEffect, useState } from "react";
 
-/**
- * Lista de eventos disponíveis para reserva.
- * Design moderno com cards atrativos e melhor UX.
- */
+// Lista de eventos
 export default function EventList() {
   const [events, setEvents] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
@@ -68,7 +65,7 @@ export default function EventList() {
                   <div className="absolute inset-0 bg-black bg-opacity-20"></div>
                   <div className="absolute top-4 right-4">
                     <span className="bg-white bg-opacity-90 text-gray-800 px-3 py-1 rounded-full text-xs font-medium">
-                      {event.maxCapacity - (event.reservations?.length ?? 0)} vagas
+                      {event.maxCapacity - (event.reservations?.filter((r: any) => r.status === 'CONFIRMED').length ?? 0)} vagas
                     </span>
                   </div>
                   <div className="absolute bottom-4 left-4">
@@ -126,9 +123,9 @@ export default function EventList() {
 
                   <div className="mt-4 pt-4 border-t border-gray-100">
                     <div className="flex justify-between items-center">
-                      <span className="text-sm text-gray-500">
-                        {event.reservations?.length ?? 0} reservas
-                      </span>
+                                          <span className="text-sm text-gray-500">
+                      {event.reservations?.filter((r: any) => r.status === 'CONFIRMED').length ?? 0} reservas
+                    </span>
                       <span className="text-blue-600 font-medium group-hover:text-blue-700 transition-colors">
                         Ver detalhes →
                       </span>
