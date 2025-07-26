@@ -5,6 +5,6 @@
     "buildCommand": "cd backend && npm install && npx prisma generate && npm run build"
   },
   "deploy": {
-    "startCommand": "cd backend && npm start"
+    "startCommand": "cd backend && npm run db:seed && npm start"
   }
 } 
