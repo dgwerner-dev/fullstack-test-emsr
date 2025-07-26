@@ -23,7 +23,7 @@ export default function LoginForm() {
     setError("");
 
     try {
-      await login({ email, password });
+      await login(email, password);
       router.push("/");
     } catch (err: any) {
       setError(err.message || "Erro ao fazer login");
