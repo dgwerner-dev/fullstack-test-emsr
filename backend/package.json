@@ -8,7 +8,7 @@
     "dev": "ts-node-dev --respawn --transpile-only src/app.ts",
     "start": "node dist/src/app.js",
     "test": "jest --runInBand --detectOpenHandles",
-    "db:seed": "npx ts-node prisma/seed.ts"
+    "db:seed": "node dist/prisma/seed.js"
   },
   "keywords": [],
   "author": "",
