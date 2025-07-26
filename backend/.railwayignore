@@ -1,0 +1,9 @@
+node_modules/
+.env
+.env.local
+.env.backup
+*.log
+coverage/
+.nyc_output/
+.DS_Store
+*.tsbuildinfo 
