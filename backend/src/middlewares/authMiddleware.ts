@@ -1,4 +1,5 @@
 import { NextFunction, Request, Response } from 'express';
+import { AuthenticatedRequest, JWTPayload } from '../types';
 import { verifyToken } from '../utils/jwt';
 
 /**
@@ -11,9 +12,9 @@ export function authenticate(req: Request, res: Response, next: NextFunction) {
   }
   const token = auth.split(' ')[1];
   try {
-    const payload = verifyToken(token) as any;
-    (req as any).userId = payload.userId;
-    (req as any).role = payload.role;
+    const payload = verifyToken(token) as JWTPayload;
+    (req as AuthenticatedRequest).userId = payload.userId;
+    (req as AuthenticatedRequest).role = payload.role;
     next();
   } catch {
     return res.status(401).json({ error: 'Token inválido' });
@@ -25,10 +26,10 @@ export function authenticate(req: Request, res: Response, next: NextFunction) {
  */
 export function authorize(roles: string[]) {
   return (req: Request, res: Response, next: NextFunction) => {
-    const role = (req as any).role;
+    const role = (req as AuthenticatedRequest).role;
     if (!roles.includes(role)) {
       return res.status(403).json({ error: 'Acesso negado' });
     }
     next();
   };
-} 
+}

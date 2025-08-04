@@ -1,8 +1,11 @@
-"use client";
+'use client';
 
-import { login as loginService, register as registerService } from "@/services/auth";
-import { createContext, useContext, useEffect, useState } from "react";
-import { io, Socket } from "socket.io-client";
+import {
+  login as loginService,
+  register as registerService,
+} from '@/services/auth';
+import { createContext, useContext, useEffect, useState } from 'react';
+import { io, Socket } from 'socket.io-client';
 
 interface User {
   id: string;
@@ -38,7 +41,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   const [socket, setSocket] = useState<Socket | null>(null);
 
   useEffect(() => {
-    const t = localStorage.getItem("token");
+    const t = localStorage.getItem('token');
     if (t) {
       setToken(t);
       const decoded: any = decodeJwt(t);
@@ -56,7 +59,9 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
   useEffect(() => {
     if (token) {
-      const newSocket = io(process.env.NEXT_PUBLIC_API_URL || "http://localhost:3001");
+      const newSocket = io(
+        process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3001'
+      );
       setSocket(newSocket);
       return () => {
         newSocket.close();
@@ -76,7 +81,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       });
     }
     setToken(res.token);
-    localStorage.setItem("token", res.token);
+    localStorage.setItem('token', res.token);
   };
 
   const register = async (name: string, email: string, password: string) => {
@@ -91,17 +96,19 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       });
     }
     setToken(res.token);
-    localStorage.setItem("token", res.token);
+    localStorage.setItem('token', res.token);
   };
 
   const logout = () => {
     setUser(null);
     setToken(null);
-    localStorage.removeItem("token");
+    localStorage.removeItem('token');
   };
 
   return (
-    <AuthContext.Provider value={{ user, token, loading, login, register, logout, socket }}>
+    <AuthContext.Provider
+      value={{ user, token, loading, login, register, logout, socket }}
+    >
       {children}
     </AuthContext.Provider>
   );
@@ -110,7 +117,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 export function useAuth() {
   const context = useContext(AuthContext);
   if (context === undefined) {
-    throw new Error("useAuth must be used within an AuthProvider");
+    throw new Error('useAuth must be used within an AuthProvider');
   }
   return context;
 }

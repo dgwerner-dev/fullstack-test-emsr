@@ -51,8 +51,7 @@ Sistema full-stack para gerenciamento de eventos com sistema de reservas, desenv
 ### Pré-requisitos
 - Node.js 18+
 - npm ou yarn
-- Conta no Supabase (para PostgreSQL)
-- Redis (opcional, para cache)
+- Docker e Docker Compose (recomendado)
 
 ### 1. Clone o repositório
 ```bash
@@ -60,40 +59,43 @@ git clone https://github.com/dgwerner-dev/fullstack-test-emsr.git
 cd fullstack-test-emsr
 ```
 
-### 2. Configuração do Backend
+### 2. Configuração com Docker (Recomendado)
+
+```bash
+# Iniciar PostgreSQL e Redis
+docker-compose up -d
+
+# Aguardar os serviços estarem prontos (healthcheck)
+```
+
+### 3. Configuração do Backend
 
 ```bash
 cd backend
 npm install
+
+# Copiar arquivo de configuração
+cp env.example .env
 ```
 
-Crie um arquivo `.env` na pasta `backend`:
-```env
-DATABASE_URL="postgresql://postgres:[SEU_PASSWORD]:5432/postgres"
-REDIS_URL="redis://localhost:6379"
-JWT_SECRET="sua_chave_secreta_jwt"
-PORT=3001
-```
-
-Execute as migrações do banco:
+Execute as migrações e seeds do banco:
 ```bash
-npx prisma migrate dev
-npx prisma generate
+npm run db:migrate
+npm run db:generate
+npm run db:seed
 ```
 
-### 3. Configuração do Frontend
+### 4. Configuração do Frontend
 
 ```bash
 cd frontend
 npm install
+
+# Copiar arquivo de configuração
+cp env.example .env.local
 ```
 
-Crie um arquivo `.env.local` na pasta `frontend`:
-```env
-NEXT_PUBLIC_API_URL=http://localhost:3001
-```
-
-### 4. Executando o Projeto
+### 5. Executando o Projeto
 
 **Backend:**
 ```bash
@@ -111,17 +113,27 @@ O backend estará disponível em `http://localhost:3001` e o frontend em `http:/
 
 ## 🧪 Testes
 
-### Executar testes do backend:
+### Backend
 ```bash
 cd backend
-npm test
+npm test                    # Executar testes
+npm run test:coverage      # Executar testes com coverage
+npm run test:watch         # Executar testes em modo watch
+npm run lint               # Verificar código
+npm run lint:fix           # Corrigir problemas de linting
+npm run format             # Formatar código
 ```
 
-### Executar testes com coverage:
+### Frontend
 ```bash
-cd backend
-npm run test:coverage
+cd frontend
+npm test                   # Executar testes
+npm run test:coverage      # Executar testes com coverage
+npm run test:watch         # Executar testes em modo watch
+npm run format             # Formatar código
 ```
+
+
 
 ## 📚 API Endpoints
 
@@ -225,19 +237,43 @@ Para facilitar os testes, o sistema já possui usuários pré-configurados:
 - Testes de CRUD de usuários
 - Testes de eventos
 - Testes de reservas com controle de capacidade
+- Testes de componentes React
 - Mocks para Redis e dependências externas
+- Limpeza automática do banco entre testes
+
+### ✅ Qualidade de Código
+- ESLint configurado para TypeScript
+- Prettier para formatação consistente
+- Tipagem forte com TypeScript
+- Remoção de funções não utilizadas
+- Tratamento de erros melhorado
 
 ## 🚀 Deploy
 
 ### Backend
-O backend pode ser deployado em qualquer plataforma que suporte Node.js (Vercel, Heroku, etc.).
+O backend pode ser deployado em qualquer plataforma que suporte Node.js (Vercel, Heroku, Railway, etc.).
 
-### Frontend (Vercel)
+### Frontend
 O frontend pode ser facilmente deployado no Vercel:
 
 ```bash
 cd frontend
 vercel --prod
+```
+
+## 🐳 Docker
+
+Para desenvolvimento local com Docker:
+
+```bash
+# Iniciar serviços
+docker-compose up -d
+
+# Parar serviços
+docker-compose down
+
+# Ver logs
+docker-compose logs -f
 ```
 
 ## 📝 Licença

@@ -1,12 +1,16 @@
 import { Request, Response } from 'express';
 import * as eventService from '../services/eventService';
+import { AuthenticatedRequest } from '../types';
 
 /**
  * Lista eventos, com filtros opcionais de data e nome.
  */
 export async function getAllEvents(req: Request, res: Response) {
   const { date, name } = req.query;
-  const events = await eventService.getAll({ date: date as string, name: name as string });
+  const events = await eventService.getAll({
+    date: date as string,
+    name: name as string,
+  });
   res.json(events);
 }
 
@@ -17,20 +21,27 @@ export async function getEventById(req: Request, res: Response) {
   try {
     const event = await eventService.getById(req.params.id);
     res.json(event);
-  } catch (error: any) {
-    res.status(404).json({ error: error.message });
+  } catch (error: unknown) {
+    const errorMessage =
+      error instanceof Error ? error.message : 'Erro desconhecido';
+    res.status(404).json({ error: errorMessage });
   }
 }
 
 /**
  * Cria um novo evento (admin).
  */
-export async function createEvent(req: Request, res: Response) {
+export async function createEvent(req: AuthenticatedRequest, res: Response) {
   try {
-    const event = await eventService.create({ ...req.body, creatorId: (req as any).userId });
+    const event = await eventService.create({
+      ...req.body,
+      creatorId: req.userId,
+    });
     res.status(201).json(event);
-  } catch (error: any) {
-    res.status(400).json({ error: error.message });
+  } catch (error: unknown) {
+    const errorMessage =
+      error instanceof Error ? error.message : 'Erro desconhecido';
+    res.status(400).json({ error: errorMessage });
   }
 }
 
@@ -41,8 +52,10 @@ export async function updateEvent(req: Request, res: Response) {
   try {
     const event = await eventService.update(req.params.id, req.body);
     res.json(event);
-  } catch (error: any) {
-    res.status(400).json({ error: error.message });
+  } catch (error: unknown) {
+    const errorMessage =
+      error instanceof Error ? error.message : 'Erro desconhecido';
+    res.status(400).json({ error: errorMessage });
   }
 }
 
@@ -53,7 +66,9 @@ export async function deleteEvent(req: Request, res: Response) {
   try {
     await eventService.remove(req.params.id);
     res.status(204).send();
-  } catch (error: any) {
-    res.status(400).json({ error: error.message });
+  } catch (error: unknown) {
+    const errorMessage =
+      error instanceof Error ? error.message : 'Erro desconhecido';
+    res.status(400).json({ error: errorMessage });
   }
-} 
+}

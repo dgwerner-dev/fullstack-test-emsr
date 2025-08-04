@@ -4,7 +4,7 @@ let redis: any = null;
 
 if (process.env.REDIS_URL) {
   redis = createClient({
-    url: process.env.REDIS_URL
+    url: process.env.REDIS_URL,
   });
 
   redis.on('error', (err: any) => {

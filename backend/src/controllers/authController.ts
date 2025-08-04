@@ -25,4 +25,4 @@ export async function login(req: Request, res: Response) {
   } catch (error: any) {
     res.status(401).json({ error: error.message });
   }
-} 
+}

@@ -1,24 +1,26 @@
-import Navbar from "@/components/Navbar";
-import NotificationBanner from "@/components/NotificationBanner";
-import { AuthProvider } from "@/contexts/AuthContext";
-import type { Metadata } from "next";
-import "./globals.css";
+import Navbar from '@/components/Navbar';
+import NotificationBanner from '@/components/NotificationBanner';
+import { AuthProvider } from '@/contexts/AuthContext';
+import type { Metadata } from 'next';
+import './globals.css';
 
 export const metadata: Metadata = {
-  title: "Event Management System",
-  description: "Desafio Fullstack - EMSR",
+  title: 'Event Management System',
+  description: 'Desafio Fullstack - EMSR',
 };
 
-export default function RootLayout({ children }: { children: React.ReactNode }) {
+export default function RootLayout({
+  children,
+}: {
+  children: React.ReactNode;
+}) {
   return (
     <html lang="pt-BR">
       <body>
         <AuthProvider>
           <NotificationBanner />
           <Navbar />
-          <div className="min-h-screen bg-gray-50">
-            {children}
-          </div>
+          <div className="min-h-screen bg-gray-50">{children}</div>
         </AuthProvider>
       </body>
     </html>

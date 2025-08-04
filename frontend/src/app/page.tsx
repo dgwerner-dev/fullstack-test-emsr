@@ -1,4 +1,4 @@
-import EventList from "@/features/events/EventList";
+import EventList from '@/features/events/EventList';
 
 export default function Page() {
   return (

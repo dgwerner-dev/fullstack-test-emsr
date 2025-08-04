@@ -8,13 +8,21 @@ const JWT_SECRET = process.env.JWT_SECRET || 'changeme';
 /**
  * Registra um novo usuário, garantindo e-mail único e senha protegida por hash.
  */
-export async function register({ email, password, name }: { email: string; password: string; name: string }) {
+export async function register({
+  email,
+  password,
+  name,
+}: {
+  email: string;
+  password: string;
+  name: string;
+}) {
   const existing = await prisma.user.findUnique({ where: { email } });
   if (existing) throw new Error('Email já cadastrado');
   const hashed = await bcrypt.hash(password, 10);
   const user = await prisma.user.create({
     data: { email, password: hashed, name },
-    select: { id: true, email: true, name: true, role: true }
+    select: { id: true, email: true, name: true, role: true },
   });
   return user;
 }
@@ -22,7 +30,13 @@ export async function register({ email, password, name }: { email: string; passw
 /**
  * Realiza login, validando senha e retornando JWT se sucesso.
  */
-export async function login({ email, password }: { email: string; password: string }) {
+export async function login({
+  email,
+  password,
+}: {
+  email: string;
+  password: string;
+}) {
   const user = await prisma.user.findUnique({ where: { email } });
   if (!user) throw new Error('Usuário ou senha inválidos');
   const valid = await bcrypt.compare(password, user.password);
@@ -33,4 +47,4 @@ export async function login({ email, password }: { email: string; password: stri
     { expiresIn: '1d' }
   );
   return token;
-} 
+}

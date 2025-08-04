@@ -65,4 +65,4 @@ export async function deleteUserById(req: Request, res: Response) {
   } catch (error: any) {
     res.status(400).json({ error: error.message });
   }
-} 
+}

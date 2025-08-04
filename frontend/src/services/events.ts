@@ -1,4 +1,4 @@
-const API_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:3001";
+const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3001';
 
 // Busca todos os eventos
 export async function getEvents(params?: { name?: string; date?: string }) {
@@ -7,43 +7,49 @@ export async function getEvents(params?: { name?: string; date?: string }) {
   console.log('Full URL:', url);
   if (params) {
     const query = new URLSearchParams();
-    if (params.name) query.append("name", params.name);
-    if (params.date) query.append("date", params.date);
+    if (params.name) query.append('name', params.name);
+    if (params.date) query.append('date', params.date);
     if ([...query].length) url += `?${query.toString()}`;
   }
   const res = await fetch(url);
-  if (!res.ok) throw new Error("Erro ao buscar eventos");
+  if (!res.ok) throw new Error('Erro ao buscar eventos');
   return res.json();
 }
 
 export async function createEvent(data: any) {
-  const token = localStorage.getItem("token");
+  const token = localStorage.getItem('token');
   const res = await fetch(`${API_URL}/events`, {
-    method: "POST",
-    headers: { "Content-Type": "application/json", "Authorization": `Bearer ${token}` },
-    body: JSON.stringify(data)
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      Authorization: `Bearer ${token}`,
+    },
+    body: JSON.stringify(data),
   });
-  if (!res.ok) throw new Error("Erro ao criar evento");
+  if (!res.ok) throw new Error('Erro ao criar evento');
   return res.json();
 }
 
 export async function updateEvent(id: string, data: any) {
-  const token = localStorage.getItem("token");
+  const token = localStorage.getItem('token');
   const res = await fetch(`${API_URL}/events/${id}`, {
-    method: "PUT",
-    headers: { "Content-Type": "application/json", "Authorization": `Bearer ${token}` },
-    body: JSON.stringify(data)
+    method: 'PUT',
+    headers: {
+      'Content-Type': 'application/json',
+      Authorization: `Bearer ${token}`,
+    },
+    body: JSON.stringify(data),
   });
-  if (!res.ok) throw new Error("Erro ao atualizar evento");
+  if (!res.ok) throw new Error('Erro ao atualizar evento');
   return res.json();
 }
 
 // Busca evento por ID
 export async function getEventById(id: string) {
-  const token = localStorage.getItem("token");
+  const token = localStorage.getItem('token');
   const res = await fetch(`${API_URL}/events/${id}`, {
-    headers: { "Authorization": `Bearer ${token}` }
+    headers: { Authorization: `Bearer ${token}` },
   });
-  if (!res.ok) throw new Error("Erro ao buscar evento");
+  if (!res.ok) throw new Error('Erro ao buscar evento');
   return res.json();
 }

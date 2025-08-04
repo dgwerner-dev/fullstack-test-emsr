@@ -1,11 +1,14 @@
-"use client";
-import { cancelReservation, getEventReservations } from "@/services/reservations";
-import { useEffect, useState } from "react";
+'use client';
+import {
+  cancelReservation,
+  getEventReservations,
+} from '@/services/reservations';
+import { useEffect, useState } from 'react';
 
 export default function EventReservations({ eventId }: { eventId: string }) {
   const [reservations, setReservations] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
-  const [error, setError] = useState("");
+  const [error, setError] = useState('');
   const [cancelingId, setCancelingId] = useState<string | null>(null);
 
   const loadReservations = () => {
@@ -21,22 +24,23 @@ export default function EventReservations({ eventId }: { eventId: string }) {
   }, [eventId]);
 
   const handleCancel = async (reservationId: string) => {
-    if (!confirm("Tem certeza que deseja cancelar esta reserva?")) return;
-    
+    if (!confirm('Tem certeza que deseja cancelar esta reserva?')) return;
+
     setCancelingId(reservationId);
-    setError(""); // Limpar erro anterior
+    setError(''); // Limpar erro anterior
     try {
       await cancelReservation(reservationId);
       loadReservations(); // Recarrega a lista
     } catch (err: any) {
-      setError(err.message || "Erro ao cancelar reserva");
+      setError(err.message || 'Erro ao cancelar reserva');
     } finally {
       setCancelingId(null);
     }
   };
 
   if (loading) return <div>Carregando reservas...</div>;
-  if (error) return <div className="bg-red-100 text-red-700 p-4 rounded">{error}</div>;
+  if (error)
+    return <div className="bg-red-100 text-red-700 p-4 rounded">{error}</div>;
   if (!reservations.length) return <div>Não há reservas para este evento.</div>;
 
   return (
@@ -45,15 +49,24 @@ export default function EventReservations({ eventId }: { eventId: string }) {
       <ul className="space-y-4">
         {reservations.map(r => (
           <li key={r.id} className="bg-white p-4 rounded shadow">
-            <div><b>Usuário:</b> {r.user?.name || r.userId}</div>
-            <div><b>Status:</b> 
-              <span className={`ml-2 px-2 py-1 rounded text-xs ${
-                r.status === 'CONFIRMED' ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'
-              }`}>
+            <div>
+              <b>Usuário:</b> {r.user?.name || r.userId}
+            </div>
+            <div>
+              <b>Status:</b>
+              <span
+                className={`ml-2 px-2 py-1 rounded text-xs ${
+                  r.status === 'CONFIRMED'
+                    ? 'bg-green-100 text-green-800'
+                    : 'bg-red-100 text-red-800'
+                }`}
+              >
                 {r.status === 'CONFIRMED' ? 'Confirmada' : 'Cancelada'}
               </span>
             </div>
-            <div><b>Data:</b> {new Date(r.reservationDate).toLocaleString()}</div>
+            <div>
+              <b>Data:</b> {new Date(r.reservationDate).toLocaleString()}
+            </div>
             {r.status === 'CONFIRMED' && (
               <button
                 onClick={() => handleCancel(r.id)}
@@ -68,4 +81,4 @@ export default function EventReservations({ eventId }: { eventId: string }) {
       </ul>
     </div>
   );
-} 
+}

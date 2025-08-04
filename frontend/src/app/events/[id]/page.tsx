@@ -1,4 +1,4 @@
-import EventDetail from "@/features/events/EventDetail";
+import EventDetail from '@/features/events/EventDetail';
 
 /**
  * Página dinâmica para exibir detalhes de um evento específico.

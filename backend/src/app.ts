@@ -1,25 +1,25 @@
 import cors from 'cors';
 import express from 'express';
-import http from "http";
-import { Server as SocketIOServer } from "socket.io";
+import http from 'http';
 import authRoutes from './routes/auth';
 import eventRoutes from './routes/event';
 import reservationRoutes from './routes/reservation';
 import userRoutes from './routes/user';
-import { setIO } from "./utils/socket";
+import { initializeSocket } from './utils/socket';
 
 const app = express();
 const server = http.createServer(app);
-const io = new SocketIOServer(server, { cors: { origin: "*" } });
-app.set("io", io);
-setIO(io);
+const io = initializeSocket(server);
+app.set('io', io);
 
-app.use(cors({
-  origin: '*',
-  credentials: false,
-  methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
-  allowedHeaders: ['Content-Type', 'Authorization']
-}));
+app.use(
+  cors({
+    origin: '*',
+    credentials: false,
+    methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+    allowedHeaders: ['Content-Type', 'Authorization'],
+  })
+);
 app.use(express.json());
 app.use('/auth', authRoutes);
 app.use('/users', userRoutes);
@@ -33,4 +33,4 @@ if (require.main === module) {
   });
 }
 
-export default app; 
+export default app;

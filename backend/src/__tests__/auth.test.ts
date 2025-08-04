@@ -9,13 +9,17 @@ jest.mock('../utils/redis', () => ({
     on: jest.fn(),
     connect: jest.fn(),
     isOpen: false,
-  }
+  },
 }));
 
 const prisma = new PrismaClient();
 
 describe('Auth API', () => {
-  const user = { email: 'testuser@example.com', password: 'Test1234', name: 'Test User' };
+  const user = {
+    email: 'testuser@example.com',
+    password: 'Test1234',
+    name: 'Test User',
+  };
   let token: string;
 
   beforeEach(async () => {
@@ -31,7 +35,9 @@ describe('Auth API', () => {
 
   it('deve fazer login com usuário registrado', async () => {
     await request(app).post('/auth/register').send(user);
-    const res = await request(app).post('/auth/login').send({ email: user.email, password: user.password });
+    const res = await request(app)
+      .post('/auth/login')
+      .send({ email: user.email, password: user.password });
     expect(res.status).toBe(200);
     expect(res.body).toHaveProperty('token');
     token = res.body.token;
@@ -46,8 +52,10 @@ describe('Auth API', () => {
 
   it('não deve logar com senha errada', async () => {
     await request(app).post('/auth/register').send(user);
-    const res = await request(app).post('/auth/login').send({ email: user.email, password: 'wrongpass' });
+    const res = await request(app)
+      .post('/auth/login')
+      .send({ email: user.email, password: 'wrongpass' });
     expect(res.status).toBe(401);
     expect(res.body).toHaveProperty('error');
   });
-}); 
+});
