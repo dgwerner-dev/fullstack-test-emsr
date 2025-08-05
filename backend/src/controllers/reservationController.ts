@@ -1,5 +1,6 @@
 import { Request, Response } from 'express';
 import * as reservationService from '../services/reservationService';
+import { AuthenticatedRequest } from '../types';
 
 /**
  * Realiza uma reserva para o usuário autenticado em um evento.
@@ -8,7 +9,7 @@ export async function reserveSpot(req: Request, res: Response) {
   try {
     const reservation = await reservationService.reserve({
       eventId: req.params.id,
-      userId: (req as any).userId,
+      userId: (req as AuthenticatedRequest).userId,
     });
     res.status(201).json(reservation);
   } catch (error: any) {
@@ -23,8 +24,8 @@ export async function cancelReservation(req: Request, res: Response) {
   try {
     await reservationService.cancel({
       reservationId: req.params.id,
-      userId: (req as any).userId,
-      isAdmin: (req as any).role === 'ADMIN',
+      userId: (req as AuthenticatedRequest).userId,
+      isAdmin: (req as AuthenticatedRequest).role === 'ADMIN',
     });
     res.status(204).send();
   } catch (error: any) {
@@ -36,7 +37,7 @@ export async function cancelReservation(req: Request, res: Response) {
  * Lista todas as reservas do usuário autenticado.
  */
 export async function getMyReservations(req: Request, res: Response) {
-  const reservations = await reservationService.getByUser((req as any).userId);
+  const reservations = await reservationService.getByUser((req as AuthenticatedRequest).userId);
   res.json(reservations);
 }
 

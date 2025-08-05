@@ -2,10 +2,7 @@ import { PrismaClient } from '@prisma/client';
 import request from 'supertest';
 import app from '../app';
 
-const Role = {
-  USER: 'USER',
-  ADMIN: 'ADMIN',
-};
+import { Role } from '@prisma/client';
 
 jest.setTimeout(20000);
 

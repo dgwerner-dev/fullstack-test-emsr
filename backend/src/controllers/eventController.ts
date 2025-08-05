@@ -31,12 +31,12 @@ export async function getEventById(req: Request, res: Response) {
 /**
  * Cria um novo evento (admin).
  */
-export async function createEvent(req: AuthenticatedRequest, res: Response) {
+export async function createEvent(req: Request, res: Response) {
   try {
-    const event = await eventService.create({
-      ...req.body,
-      creatorId: req.userId,
-    });
+          const event = await eventService.create({
+        ...req.body,
+        creatorId: (req as AuthenticatedRequest).userId,
+      });
     res.status(201).json(event);
   } catch (error: unknown) {
     const errorMessage =
